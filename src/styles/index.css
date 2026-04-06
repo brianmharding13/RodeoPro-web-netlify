@@ -1,0 +1,32 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Scrollbar hiding */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slide up animation for bottom sheet */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Monospace numbers for time display */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}

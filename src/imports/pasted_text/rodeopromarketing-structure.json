@@ -1,0 +1,178 @@
+Add a marketing website to this project. The marketing site is for RodeoPro, a mobile-first performance tracking app for competitive barrel racers. The site should use the same design language as the app (dark charcoal backgrounds, amber/gold #F59E0B primary, teal #0D9488 accent, white text) and serve as the public-facing landing page that converts visitors into subscribers before routing them into the app.
+
+---
+
+BRAND
+
+App name: RodeoPro (styled as "RODEO" in white + "PRO" in amber gold)
+Tagline: "Track Every Run. Own Every Record."
+Sub-tagline: "The performance platform built for barrel racing competitors."
+Brand colors:
+  - Background: #111827 (primary dark), #1F2937 (card/section dark)
+  - Primary accent: #F59E0B (amber gold)
+  - Secondary accent: #0D9488 (teal)
+  - Text: #FFFFFF primary, #9CA3AF secondary gray
+  - Success: #10B981 green
+  - Border/divider: #374151
+
+---
+
+PAGES & SECTIONS
+
+Build a single-page marketing site with smooth scroll navigation. All sections live on one page (index/marketing route). A sticky top nav links to each section. The page ends with a footer.
+
+---
+
+NAV BAR (sticky, top, full width)
+
+Left: "RODEO" (white, bold) + "PRO" (amber, bold) wordmark
+Center links: Features · How It Works · Pricing
+Right: "Sign In" text link (ghost) + "Start Free Trial" button (amber background, dark text, rounded)
+Background: #111827 with a subtle bottom border #374151, slight blur/backdrop on scroll
+
+---
+
+SECTION 1 — HERO
+
+Full-width, centered layout. Large bold headline, supporting copy, two CTAs, and a mobile phone mockup showing the app's Runs screen (dark UI, amber accents, run cards with times like "13.842s", "14.101s", horse names "Whiskey" and "Rio").
+
+Headline: "Track Every Run.\nOwn Every Record."
+Sub-copy: "RodeoPro gives barrel racers a professional-grade platform to log runs, analyze performance, and track earnings — all from your phone."
+CTA 1: "Start Free Trial" — amber filled button, large, links to /app
+CTA 2: "See How It Works" — ghost/outline button, scrolls to #how-it-works section
+Badge below CTAs: "No credit card required · Cancel anytime"
+Background: dark gradient from #111827 top to #1F2937 bottom, subtle radial amber glow behind mockup
+
+---
+
+SECTION 2 — SOCIAL PROOF BAR
+
+Slim horizontal band in #1F2937. Three stats centered with dividers between them:
+- "2,400+ Runs Logged"
+- "500+ Horses Tracked"
+- "Across 12 States"
+Typography: large amber number, small white label beneath
+
+---
+
+SECTION 3 — FEATURES
+
+Section title: "Everything You Need to Compete at Your Best"
+Section sub: "Purpose-built tools for serious barrel racers."
+
+Six feature cards in a 3-column grid (2-column on tablet, 1-column mobile). Each card has an icon, title, and 2-line description. Cards use #1F2937 background, rounded corners, subtle amber icon.
+
+Feature cards:
+1. Icon: stopwatch — "Run Logging" — "Log every run with time, barrel status, payout, and media in seconds."
+2. Icon: horse / star — "Horse Profiles" — "Track each horse's personal record, average time, and performance history across arenas."
+3. Icon: map pin — "Arena Tracking" — "See your record time and run count at every arena you've competed at."
+4. Icon: bar chart — "Performance Analytics" — "Visualize trends and compare horses side-by-side to make smarter training decisions."
+5. Icon: camera — "Media Gallery" — "Attach photos and videos to every run to review your form and share your best moments."
+6. Icon: dollar sign — "Earnings Tracker" — "Monitor competition payouts over time to see which horses and arenas are most profitable."
+
+---
+
+SECTION 4 — HOW IT WORKS (id="how-it-works")
+
+Section title: "Up and Running in Minutes"
+Three numbered steps in a horizontal row with connecting dotted line between them. Each step has a large amber step number, bold title, and description.
+
+Step 1: "Add Your Horses & Arenas" — "Build your stable and save the arenas where you compete. Takes less than 2 minutes."
+Step 2: "Log Your Runs" — "After each run, enter your time, note any knocked barrels, add photos or video, and record your payout."
+Step 3: "Track Your Progress" — "Watch your personal records, clean run streaks, and earnings grow over time."
+
+Below steps: large amber CTA button "Get Started Free" linking to /app
+
+---
+
+SECTION 5 — PRICING (id="pricing")
+
+Section title: "Simple, Transparent Pricing"
+Section sub: "One plan. Everything included. No hidden fees."
+
+Monthly / Annual toggle switch at top center. When Annual is selected, show a green badge "Save 33%" next to the toggle. Default to Monthly.
+
+Two pricing cards side by side, centered:
+
+Card 1 — MONTHLY
+Price: $9.99 / month
+Subtext: "Billed monthly, cancel anytime."
+
+Card 2 — ANNUAL (highlighted with amber border and "Best Value" badge)
+Price: $6.99 / month
+Subtext: "Billed as $83.88 / year."
+When monthly toggle is active, show $9.99 on Card 1 and $6.99 on Card 2.
+When annual toggle is active, show $9.99/mo on Card 1 and $6.99/mo on Card 2 (same prices, just surface the billing note).
+
+Both cards include the same feature list with amber checkmarks:
+✓ Unlimited run logging
+✓ Unlimited horses & arenas
+✓ Performance analytics & charts
+✓ Photo & video attachments
+✓ Earnings tracking
+✓ Personal record tracking
+✓ Clean run streaks
+✓ Dark & light mode
+
+CTA button on each card: "Start Free Trial" — Monthly card uses teal button, Annual card uses amber button (primary).
+
+Below cards: small gray text — "Payments processed securely by Stripe. Your subscription can be cancelled at any time from your account settings."
+
+Stripe integration notes (wire into the component):
+- On "Start Free Trial" click, call Stripe Checkout with the appropriate Price ID
+- Monthly Price ID: stripe_price_monthly (placeholder, to be replaced)
+- Annual Price ID: stripe_price_annual (placeholder, to be replaced)
+- Success redirect: /app?subscribed=true
+- Cancel redirect: /#pricing
+- Include a Stripe publishable key constant: VITE_STRIPE_PUBLISHABLE_KEY (read from env)
+- Use @stripe/stripe-js loadStripe() to initialize
+- Wrap in a <StripeCheckoutButton> component that accepts priceId and label props
+- Show a loading spinner on the button while the Stripe redirect is initializing
+
+---
+
+SECTION 6 — TESTIMONIALS
+
+Section title: "Built by Barrel Racers, for Barrel Racers"
+Three testimonial cards in a row. Each has a quote, name, and location. Cards use #1F2937 background with a subtle amber left border accent.
+
+Card 1: "I used to keep notes in a paper notebook. RodeoPro replaced all of that and gives me stats I never could have tracked by hand." — Sarah M., Texas
+Card 2: "Being able to see my mare's times at each arena separately changed how I pick which events to enter." — Kayla R., Oklahoma
+Card 3: "The payout tracker alone is worth it. I finally know which competitions are actually worth the entry fee." — Brittany T., Nevada
+
+---
+
+SECTION 7 — FINAL CTA BANNER
+
+Full-width dark section with centered content. Amber radial gradient background glow.
+Headline: "Ready to Take Your Performance to the Next Level?"
+Sub: "Join hundreds of barrel racers already using RodeoPro."
+Large amber button: "Enter RodeoPro" — links to /app
+Below button: ghost/text link "View Pricing ↑" that smooth-scrolls back up to #pricing
+
+---
+
+FOOTER
+
+Dark #0F1117 background. Three columns:
+Left: "RODEO PRO" wordmark + tagline "Track Every Run. Own Every Record." + small copyright "© 2025 RodeoPro. All rights reserved."
+Center: Links — Features · How It Works · Pricing · Sign In
+Right: "Contact" section — support@rodeoproapp.com (placeholder) + small note "Made for barrel racers"
+
+---
+
+ROUTING
+
+This marketing page lives at the root route "/". The existing app lives at "/app". The sticky nav "Sign In" link goes to /app. All "Start Free Trial" / "Enter RodeoPro" CTAs go to /app (or trigger Stripe checkout if a plan is being selected). Use React Router for routing between "/" and "/app".
+
+---
+
+TECH NOTES
+
+- Match the existing stack: React 18, TypeScript, Vite, Tailwind CSS 4, React Router
+- Reuse existing design tokens and Tailwind config from the app
+- Use Lucide React for all icons (already installed)
+- Install @stripe/stripe-js for Stripe Checkout integration
+- All sections should be responsive: desktop (3-col grids), tablet (2-col), mobile (1-col stack)
+- Animate sections into view on scroll with subtle fade-up transitions (use Framer Motion, already installed)
+- The page should match the dark-mode-first aesthetic of the app exactly
