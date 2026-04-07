@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import {
@@ -32,8 +33,8 @@ function AnimatedSection({ children, className = "" }: { children: React.ReactNo
 }
 
 export default function Landing() {
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,20 +91,29 @@ export default function Landing() {
 
             {/* Right CTAs */}
             <div className="flex items-center gap-4">
-              <a
-                href="https://billing.stripe.com/p/login/test_XXXXXXXXXX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#9CA3AF] hover:text-white transition-colors hidden sm:block"
-              >
-                Manage Subscription
-              </a>
-              <Link
-                to="/signup"
-                className="bg-[#F59E0B] text-[#111827] px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-[#F59E0B]/90 transition-colors text-sm sm:text-base"
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="bg-[#F59E0B] text-[#111827] px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-[#F59E0B]/90 transition-colors text-sm sm:text-base"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="text-[#9CA3AF] hover:text-white transition-colors hidden sm:block"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="bg-[#F59E0B] text-[#111827] px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-[#F59E0B]/90 transition-colors text-sm sm:text-base"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -484,40 +494,7 @@ export default function Landing() {
                 One plan. Everything included. No hidden fees.
               </p>
 
-              {/* Billing Toggle */}
-              <div className="flex items-center justify-center gap-4 mb-12">
-                <span
-                  className={`text-sm ${
-                    billingPeriod === "monthly" ? "text-white" : "text-[#9CA3AF]"
-                  }`}
-                >
-                  Monthly
-                </span>
-                <button
-                  onClick={() =>
-                    setBillingPeriod(billingPeriod === "monthly" ? "annual" : "monthly")
-                  }
-                  className="relative w-14 h-7 rounded-full bg-[#374151] transition-colors"
-                >
-                  <div
-                    className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-[#F59E0B] transition-transform ${
-                      billingPeriod === "annual" ? "translate-x-7" : ""
-                    }`}
-                  />
-                </button>
-                <span
-                  className={`text-sm ${
-                    billingPeriod === "annual" ? "text-white" : "text-[#9CA3AF]"
-                  }`}
-                >
-                  Annual
-                </span>
-                {billingPeriod === "annual" && (
-                  <span className="bg-[#10B981] text-white text-xs px-2 py-1 rounded font-bold">
-                    Save 33%
-                  </span>
-                )}
-              </div>
+
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -555,10 +532,10 @@ export default function Landing() {
                 </ul>
 
                 <Link
-                  to="/signup"
+                  to={user ? "/subscribe" : "/signup"}
                   className="block w-full bg-[#0D9488] text-white py-3 rounded-lg font-semibold text-center hover:bg-[#0D9488]/90 transition-colors"
                 >
-                  Subscribe Monthly
+                  {user ? "Subscribe Monthly" : "Get Started"}
                 </Link>
               </motion.div>
 
@@ -601,10 +578,10 @@ export default function Landing() {
                 </ul>
 
                 <Link
-                  to="/signup"
+                  to={user ? "/subscribe" : "/signup"}
                   className="block w-full bg-[#F59E0B] text-[#111827] py-3 rounded-lg font-semibold text-center hover:bg-[#F59E0B]/90 transition-colors"
                 >
-                  Subscribe Annually
+                  {user ? "Subscribe Annually" : "Get Started"}
                 </Link>
               </motion.div>
             </div>
@@ -764,9 +741,15 @@ export default function Landing() {
               >
                 Pricing
               </button>
-              <Link to="/app" className="text-[#9CA3AF] hover:text-white transition-colors">
-                Sign In
-              </Link>
+              {user ? (
+                <Link to="/dashboard" className="text-[#9CA3AF] hover:text-white transition-colors">
+                  Dashboard
+                </Link>
+              ) : (
+                <Link to="/login" className="text-[#9CA3AF] hover:text-white transition-colors">
+                  Sign In
+                </Link>
+              )}
             </div>
 
             {/* Right: Contact */}
@@ -778,6 +761,14 @@ export default function Landing() {
               >
                 support@rodeoproapp.com
               </a>
+              <div className="flex flex-col gap-2 mt-4">
+                <Link to="/privacy" className="text-[#9CA3AF] hover:text-white transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+                <Link to="/terms" className="text-[#9CA3AF] hover:text-white transition-colors text-sm">
+                  Terms of Service
+                </Link>
+              </div>
             </div>
           </div>
         </div>

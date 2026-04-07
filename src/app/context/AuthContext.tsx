@@ -1,91 +1,77 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '../../lib/supabase';
 
 interface User {
   id: string;
   email: string;
   name: string;
-  subscriptionStatus: 'active' | 'inactive' | 'pending';
-  subscriptionPlan?: 'monthly' | 'annual';
 }
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
+  session: Session | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
-  updateSubscription: (status: 'active' | 'inactive' | 'pending', plan?: 'monthly' | 'annual') => void;
+  signup: (email: string, password: string, name: string) => Promise<{ needsConfirmation: boolean }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function toUser(supabaseUser: SupabaseUser): User {
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email ?? '',
+    name: (supabaseUser.user_metadata?.name as string) ?? supabaseUser.email ?? '',
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('rodeopro_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Load initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ? toUser(session.user) : null);
+      setLoading(false);
+    });
+
+    // Keep session in sync
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ? toUser(session.user) : null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const signup = async (email: string, password: string, name: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
+  const signup = async (email: string, password: string, name: string): Promise<{ needsConfirmation: boolean }> => {
+    const { data, error } = await supabase.auth.signUp({
       email,
-      name,
-      subscriptionStatus: 'pending',
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('rodeopro_user', JSON.stringify(newUser));
+      password,
+      options: { data: { name } },
+    });
+    if (error) throw error;
+    // session is null when Supabase email confirmation is enabled
+    return { needsConfirmation: data.session === null };
   };
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // For demo purposes, create a user on login
-    const existingUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      name: email.split('@')[0],
-      subscriptionStatus: 'active',
-      subscriptionPlan: 'monthly',
-    };
-    
-    setUser(existingUser);
-    localStorage.setItem('rodeopro_user', JSON.stringify(existingUser));
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('rodeopro_user');
-  };
-
-  const updateSubscription = (status: 'active' | 'inactive' | 'pending', plan?: 'monthly' | 'annual') => {
-    if (user) {
-      const updatedUser = { ...user, subscriptionStatus: status, subscriptionPlan: plan };
-      setUser(updatedUser);
-      localStorage.setItem('rodeopro_user', JSON.stringify(updatedUser));
-    }
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user && user.subscriptionStatus === 'active',
-        login,
-        signup,
-        logout,
-        updateSubscription,
-      }}
-    >
+    <AuthContext.Provider value={{ user, session, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

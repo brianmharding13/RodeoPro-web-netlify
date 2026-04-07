@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'motion/react';
-import { Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export default function SignUp() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +34,15 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      await signup(formData.email, formData.password, formData.name);
-      navigate('/subscribe');
-    } catch (err) {
-      setError('Failed to create account. Please try again.');
+      const { needsConfirmation } = await signup(formData.email, formData.password, formData.name);
+      if (needsConfirmation) {
+        setConfirmed(true);
+      } else {
+        navigate('/subscribe');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to create account. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -62,7 +68,23 @@ export default function SignUp() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          <div className="text-center mb-8">
+          {confirmed ? (
+            <div className="bg-[#1F2937] rounded-2xl p-8 border border-gray-800 text-center">
+              <CheckCircle className="w-14 h-14 text-[#F59E0B] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">Check your email</h2>
+              <p className="text-gray-400 mb-6">
+                We sent a confirmation link to <span className="text-white font-medium">{formData.email}</span>. Click it to activate your account, then sign in.
+              </p>
+              <Link
+                to="/login"
+                className="inline-block bg-[#F59E0B] text-[#111827] px-6 py-3 rounded-lg font-semibold hover:bg-[#F59E0B]/90 transition-colors"
+              >
+                Go to Sign In
+              </Link>
+            </div>
+          ) : (
+            <>
+            <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2">Create Your Account</h1>
             <p className="text-gray-400">
               Start tracking your barrel racing performance
@@ -194,14 +216,16 @@ export default function SignUp() {
           {/* Terms */}
           <p className="text-center text-xs text-gray-500 mt-6">
             By creating an account, you agree to our{' '}
-            <a href="#" className="text-[#F59E0B] hover:underline">
+            <Link to="/terms" className="text-[#F59E0B] hover:underline">
               Terms of Service
-            </a>{' '}
+            </Link>{' '}
             and{' '}
-            <a href="#" className="text-[#F59E0B] hover:underline">
+            <Link to="/privacy" className="text-[#F59E0B] hover:underline">
               Privacy Policy
-            </a>
+            </Link>
           </p>
+            </>
+          )}
         </motion.div>
       </div>
     </div>

@@ -1,296 +1,242 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { 
-  User, 
-  Trophy, 
-  MapPin, 
-  Star, 
-  Settings, 
-  Bell, 
-  HelpCircle, 
-  LogOut, 
-  ChevronRight,
-  Camera,
-  Mail,
-  Phone
-} from "lucide-react";
-import ThemeToggle from "../ui/ThemeToggle";
-import { runs, horses, arenas } from "../../data/mockData";
+import { useEffect, useState, useCallback } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { LogOut, CheckCircle, AlertCircle, Clock, Download, RefreshCw } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../../lib/supabase";
+import { post } from "../../../lib/api";
+
+interface Subscription {
+  status: string;
+  plan: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+}
 
 export default function AccountPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, logout } = useAuth();
-  const [userName, setUserName] = useState(user?.name || "Sarah Mitchell");
-  const [userEmail, setUserEmail] = useState(user?.email || "sarah.mitchell@example.com");
-  const [userPhone, setUserPhone] = useState("(555) 123-4567");
-  const [isEditing, setIsEditing] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
-  // Calculate stats
-  const totalRuns = runs.length;
-  const cleanRuns = runs.filter(r => r.isClean).length;
-  const bestTime = Math.min(...runs.map(r => r.time));
-  const totalEarnings = runs.reduce((sum, run) => sum + (run.payout || 0), 0);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subLoading, setSubLoading] = useState(true);
+  const [subRefreshing, setSubRefreshing] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const success = searchParams.get("success") === "true";
+
+  const fetchSubscription = useCallback(async (showRefreshing = false) => {
+    if (!user) return;
+    if (showRefreshing) setSubRefreshing(true);
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("status, plan, current_period_end, cancel_at_period_end")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    setSubscription(data ?? { status: "inactive", plan: null, current_period_end: null, cancel_at_period_end: false });
+    setSubLoading(false);
+    setSubRefreshing(false);
+  }, [user]);
+
+  useEffect(() => {
+    fetchSubscription();
+  }, [fetchSubscription]);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const { url } = await post<{ url: string }>('/stripe/portal', {});
+      globalThis.location.href = url;
+    } catch {
+      setPortalLoading(false);
+    }
+  };
+
+  const isCancelling = subscription?.status === "active" && subscription?.cancel_at_period_end;
+  const isActive = subscription?.status === "active";
+
+  const periodEndDate = subscription?.current_period_end
+    ? new Date(subscription.current_period_end).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+
+  // Derive the human-readable status line
+  let statusLabel = "Inactive";
+  let statusColor = "text-gray-400 bg-gray-400/10 border-gray-400/30";
+  let periodLabel: string | null = null;
+
+  if (subscription?.status === "active") {
+    if (isCancelling && periodEndDate) {
+      statusLabel = "Cancels on " + periodEndDate;
+      statusColor = "text-yellow-400 bg-yellow-400/10 border-yellow-400/30";
+    } else {
+      statusLabel = "Active";
+      statusColor = "text-green-400 bg-green-400/10 border-green-400/30";
+      periodLabel = periodEndDate ? "Renews" : null;
+    }
+  } else if (subscription?.status === "past_due") {
+    statusLabel = "Past Due";
+    statusColor = "text-yellow-400 bg-yellow-400/10 border-yellow-400/30";
+  } else if (subscription?.status === "cancelled" || subscription?.status === "canceled") {
+    statusLabel = "Cancelled";
+    statusColor = "text-red-400 bg-red-400/10 border-red-400/30";
+    periodLabel = periodEndDate ? "Ended" : null;
+  }
+
   return (
-    <div className="min-h-screen bg-white dark:bg-[#111827] transition-colors pb-20">
-      {/* Header with Profile Card */}
-      <div className="bg-gradient-to-b from-gray-50 dark:from-[#1F2937] to-white dark:to-[#111827] border-b border-gray-200 dark:border-[#374151] px-4 pt-6 pb-8 transition-colors">
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            RODEO<span className="text-[#F59E0B]">PRO</span>
-          </div>
-          <Link to="/app/runs" className="text-sm text-[#0D9488] font-semibold">
-            Done
-          </Link>
-        </div>
-
-        {/* Profile Photo & Info */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center text-white text-3xl font-bold">
-              {userName.split(' ').map(n => n[0]).join('')}
-            </div>
-            <button className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#0D9488] flex items-center justify-center text-white shadow-lg hover:bg-[#0F766E] transition-all active:scale-95">
-              <Camera className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex-1">
-            {isEditing ? (
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full bg-gray-100 dark:bg-[#374151] border border-gray-300 dark:border-[#4B5563] rounded-lg px-3 py-2 text-gray-900 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[#0D9488] transition-colors"
-              />
-            ) : (
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {userName}
-              </h2>
-            )}
-            <p className="text-sm text-gray-500 dark:text-[#9CA3AF]">Barrel Racer</p>
-          </div>
-        </div>
-
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white dark:bg-[#1F2937] rounded-xl p-4 border border-gray-200 dark:border-[#374151] transition-colors">
-            <div className="text-3xl font-bold font-mono text-[#F59E0B] mb-1">
-              {totalRuns}
-            </div>
-            <div className="text-xs text-gray-500 dark:text-[#9CA3AF] font-medium">Total Runs</div>
-          </div>
-          <div className="bg-white dark:bg-[#1F2937] rounded-xl p-4 border border-gray-200 dark:border-[#374151] transition-colors">
-            <div className="text-3xl font-bold font-mono text-[#10B981] mb-1">
-              {cleanRuns}
-            </div>
-            <div className="text-xs text-gray-500 dark:text-[#9CA3AF] font-medium">Clean Runs</div>
-          </div>
-          <div className="bg-white dark:bg-[#1F2937] rounded-xl p-4 border border-gray-200 dark:border-[#374151] transition-colors">
-            <div className="text-3xl font-bold font-mono text-[#0D9488] mb-1">
-              {bestTime.toFixed(2)}s
-            </div>
-            <div className="text-xs text-gray-500 dark:text-[#9CA3AF] font-medium">Best Time</div>
-          </div>
-          <div className="bg-white dark:bg-[#1F2937] rounded-xl p-4 border border-gray-200 dark:border-[#374151] transition-colors">
-            <div className="text-3xl font-bold font-mono text-[#F59E0B] mb-1">
-              ${totalEarnings.toLocaleString()}
-            </div>
-            <div className="text-xs text-gray-500 dark:text-[#9CA3AF] font-medium">Earnings</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Contact Info Section */}
-      <div className="px-4 py-4">
-        <h3 className="text-xs font-bold text-gray-400 dark:text-[#6B7280] uppercase tracking-wider mb-3">
-          Contact Information
-        </h3>
-        <div className="bg-gray-50 dark:bg-[#1F2937] rounded-xl border border-gray-200 dark:border-[#374151] overflow-hidden transition-colors">
-          <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors border-b border-gray-200 dark:border-[#374151]">
-            <div className="w-10 h-10 rounded-full bg-[#0D9488]/20 flex items-center justify-center flex-shrink-0">
-              <Mail className="w-5 h-5 text-[#0D9488]" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-xs text-gray-500 dark:text-[#9CA3AF] mb-0.5">Email</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{userEmail}</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors">
-            <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
-              <Phone className="w-5 h-5 text-[#F59E0B]" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-xs text-gray-500 dark:text-[#9CA3AF] mb-0.5">Phone</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{userPhone}</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
-          </button>
-        </div>
-      </div>
-
-      {/* Settings Section */}
-      <div className="px-4 py-4">
-        <h3 className="text-xs font-bold text-gray-400 dark:text-[#6B7280] uppercase tracking-wider mb-3">
-          Preferences
-        </h3>
-        <div className="bg-gray-50 dark:bg-[#1F2937] rounded-xl border border-gray-200 dark:border-[#374151] overflow-hidden transition-colors">
-          <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-[#374151]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center flex-shrink-0">
-                <Settings className="w-5 h-5 text-[#6366F1]" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Theme</p>
-                <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">Switch between light & dark</p>
-              </div>
-            </div>
-            <ThemeToggle />
-          </div>
-          
-          <div className="flex items-center justify-between px-4 py-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
-                <Bell className="w-5 h-5 text-[#F59E0B]" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Notifications</p>
-                <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">PR alerts & reminders</p>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#111827] text-white flex flex-col">
+      {/* Nav */}
+      <nav className="bg-[#111827] border-b border-[#374151]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center gap-0 text-xl font-bold">
+              <span className="text-white">RODEO</span>
+              <span className="text-[#F59E0B]">PRO</span>
+            </Link>
             <button
-              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-              className={`w-12 h-7 rounded-full transition-all ${
-                notificationsEnabled ? "bg-[#10B981]" : "bg-gray-300 dark:bg-[#4B5563]"
-              }`}
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-[#9CA3AF] hover:text-white transition-colors text-sm"
             >
-              <div
-                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                  notificationsEnabled ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
+              <LogOut className="w-4 h-4" />
+              Sign Out
             </button>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* My Data Section */}
-      <div className="px-4 py-4">
-        <h3 className="text-xs font-bold text-gray-400 dark:text-[#6B7280] uppercase tracking-wider mb-3">
-          Subscription
-        </h3>
-        <div className="bg-gray-50 dark:bg-[#1F2937] rounded-xl border border-gray-200 dark:border-[#374151] overflow-hidden transition-colors">
-          <div className="px-4 py-4 border-b border-gray-200 dark:border-[#374151]">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Current Plan</span>
-              <span className="bg-[#10B981] text-white text-xs px-2 py-1 rounded font-bold">
-                {user?.subscriptionStatus === 'active' ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">
-              {user?.subscriptionPlan === 'monthly' ? 'Monthly - $9.99/month' : 'Annual - $6.99/month'}
-            </p>
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+
+        {/* Success banner */}
+        {success && (
+          <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl px-4 py-3">
+            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm font-medium">Subscription activated! Welcome to RodeoPro.</p>
           </div>
-          <a
-            href="https://billing.stripe.com/p/login/test_XXXXXXXXXX"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center flex-shrink-0">
-              <Settings className="w-5 h-5 text-[#6366F1]" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Manage Subscription</p>
-              <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">Update payment or cancel</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
-          </a>
-        </div>
-      </div>
+        )}
 
-      {/* My Data Section */}
-      <div className="px-4 py-4">
-        <h3 className="text-xs font-bold text-gray-400 dark:text-[#6B7280] uppercase tracking-wider mb-3">
-          My Data
-        </h3>
-        <div className="bg-gray-50 dark:bg-[#1F2937] rounded-xl border border-gray-200 dark:border-[#374151] overflow-hidden transition-colors">
+        {/* Profile card */}
+        <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
+          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Account</h2>
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center text-[#111827] text-xl font-bold flex-shrink-0">
+              {user?.name?.charAt(0).toUpperCase() ?? "?"}
+            </div>
+            <div>
+              <p className="font-semibold text-lg">{user?.name}</p>
+              <p className="text-[#9CA3AF] text-sm">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Subscription card */}
+        <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Subscription</h2>
+            <button
+              onClick={() => fetchSubscription(true)}
+              disabled={subRefreshing}
+              className="text-[#6B7280] hover:text-[#9CA3AF] transition-colors disabled:opacity-50"
+              title="Refresh subscription status"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${subRefreshing ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+
+          {subLoading ? (
+            <div className="flex items-center gap-2 text-[#9CA3AF]">
+              <div className="w-4 h-4 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm">Loading…</span>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#9CA3AF]">Status</span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColor}`}>
+                  {statusLabel}
+                </span>
+              </div>
+
+              {periodLabel && periodEndDate && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#9CA3AF]">{periodLabel}</span>
+                  <span className="flex items-center gap-1.5 text-sm">
+                    <Clock className="w-3.5 h-3.5 text-[#9CA3AF]" />
+                    {periodEndDate}
+                  </span>
+                </div>
+              )}
+
+              {subscription?.plan && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#9CA3AF]">Plan</span>
+                  <span className="text-sm font-medium capitalize">{subscription.plan}</span>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-[#374151] space-y-3">
+                {!isActive && (
+                  <Link
+                    to="/subscribe"
+                    className="flex items-center justify-center w-full bg-[#F59E0B] text-[#111827] py-2.5 rounded-lg font-semibold hover:bg-[#F59E0B]/90 transition-colors text-sm"
+                  >
+                    Subscribe Now
+                  </Link>
+                )}
+                {isActive && (
+                  <button
+                    onClick={handleManageSubscription}
+                    disabled={portalLoading}
+                    className="flex items-center justify-center w-full border border-[#374151] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {portalLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-3.5 h-3.5 border-2 border-[#9CA3AF] border-t-transparent rounded-full animate-spin" />{"Loading…"}
+                      </span>
+                    ) : 'Manage Subscription'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* App download card */}
+        <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
+          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Mobile App</h2>
+          <p className="text-sm text-[#9CA3AF] mb-4">
+            Track your runs, manage horses and arenas — all from your phone.
+          </p>
+          {!isActive && (
+            <div className="flex items-center gap-2 text-yellow-400 text-xs mb-4">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              An active subscription is required to use the mobile app.
+            </div>
+          )}
           <Link
-            to="/app/horses"
-            className="flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors border-b border-gray-200 dark:border-[#374151]"
+            to="/download"
+            className={`inline-flex items-center gap-2 text-sm font-semibold transition-colors ${
+              isActive
+                ? "text-[#F59E0B] hover:text-[#F59E0B]/80"
+                : "text-[#6B7280] cursor-not-allowed pointer-events-none"
+            }`}
           >
-            <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
-              <Star className="w-5 h-5 text-[#F59E0B]" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">My Horses</p>
-              <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">{horses.length} horses</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
-          </Link>
-          
-          <Link
-            to="/app/arenas"
-            className="flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-[#0D9488]/20 flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-5 h-5 text-[#0D9488]" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">My Arenas</p>
-              <p className="text-xs text-gray-500 dark:text-[#9CA3AF]">{arenas.length} arenas</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
+            <Download className="w-4 h-4" />
+            Download the App
           </Link>
         </div>
-      </div>
 
-      {/* Support Section */}
-      <div className="px-4 py-4">
-        <h3 className="text-xs font-bold text-gray-400 dark:text-[#6B7280] uppercase tracking-wider mb-3">
-          Support
-        </h3>
-        <div className="bg-gray-50 dark:bg-[#1F2937] rounded-xl border border-gray-200 dark:border-[#374151] overflow-hidden transition-colors">
-          <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors border-b border-gray-200 dark:border-[#374151]">
-            <div className="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center flex-shrink-0">
-              <HelpCircle className="w-5 h-5 text-[#6366F1]" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Help & FAQ</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-[#6B7280]" />
-          </button>
-          
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-100 dark:hover:bg-[#374151] transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-[#EF4444]/20 flex items-center justify-center flex-shrink-0">
-              <LogOut className="w-5 h-5 text-[#EF4444]" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-[#EF4444]">Sign Out</p>
-            </div>
-          </button>
-        </div>
-      </div>
+      </main>
 
-      {/* App Version */}
-      <div className="px-4 py-8 text-center">
-        <p className="text-xs text-gray-400 dark:text-[#6B7280]">
-          RodeoPro v1.0.0
-        </p>
-        <p className="text-xs text-gray-400 dark:text-[#6B7280] mt-1">
-          Built for barrel racers, by barrel racers 🤠
-        </p>
-      </div>
+      <footer className="py-6 border-t border-[#374151] text-center">
+        <p className="text-xs text-[#6B7280]">© 2026 RodeoPro. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
