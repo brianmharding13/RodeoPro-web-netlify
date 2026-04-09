@@ -66,7 +66,7 @@ export default function Subscribe() {
     setError('');
 
     try {
-      const { url } = await post<{ url: string }>('/stripe/checkout', {
+      const { url } = await post<{ url: string }>('/stripe-checkout', {
         priceId: plan.priceId,
       });
       globalThis.location.href = url;

@@ -49,7 +49,7 @@ export default function AccountPage() {
   const handleManageSubscription = async () => {
     setPortalLoading(true);
     try {
-      const { url } = await post<{ url: string }>('/stripe/portal', {});
+      const { url } = await post<{ url: string }>('/stripe-portal', {});
       globalThis.location.href = url;
     } catch {
       setPortalLoading(false);
