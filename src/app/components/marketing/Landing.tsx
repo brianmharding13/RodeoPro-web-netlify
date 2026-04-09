@@ -62,9 +62,8 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-0 text-xl font-bold">
-              <span className="text-white">RODEO</span>
-              <span className="text-[#F59E0B]">PRO</span>
+            <Link to="/" className="flex items-center">
+              <img src="/images/rodeoProWhite.svg" alt="RodeoPro" className="h-8" />
             </Link>
 
             {/* Center Links */}
@@ -709,9 +708,8 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Left: Branding */}
             <div>
-              <div className="flex items-center gap-0 text-xl font-bold mb-3">
-                <span className="text-white">RODEO</span>
-                <span className="text-[#F59E0B]">PRO</span>
+            <div className="flex items-center mb-3">
+              <img src="/images/rodeoProWhite.svg" alt="RodeoPro" className="h-7" />
               </div>
               <p className="text-sm text-[#9CA3AF] mb-4">
                 Track Every Run. Own Every Record.

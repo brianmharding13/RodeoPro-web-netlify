@@ -53,9 +53,8 @@ export default function SignUp() {
       {/* Header */}
       <header className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link to="/" className="flex items-center gap-0 text-2xl font-bold">
-            <span className="text-white">RODEO</span>
-            <span className="text-[#F59E0B]">PRO</span>
+          <Link to="/" className="flex items-center">
+            <img src="/images/rodeoProWhite.svg" alt="RodeoPro" className="h-8" />
           </Link>
         </div>
       </header>
