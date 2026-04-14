@@ -4,6 +4,7 @@ import PrivacyPolicy from "./components/marketing/PrivacyPolicy";
 import TermsOfService from "./components/marketing/TermsOfService";
 import SignUp from "./components/auth/SignUp";
 import Login from "./components/auth/Login";
+import ResetPassword from "./components/auth/ResetPassword";
 import Subscribe from "./components/subscription/Subscribe";
 import AccountPage from "./components/account/AccountPage";
 import Download from "./components/marketing/Download";
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
       {
         path: "/download",
         Component: Download,
+      },
+      {
+        path: "/reset-password",
+        Component: ResetPassword,
       },
       {
         path: "/dashboard",
