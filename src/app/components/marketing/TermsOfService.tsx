@@ -74,8 +74,8 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">5. Intellectual Property</h2>
             <p>
-              All content, features, and functionality of RodeoPro — including but not limited to
-              text, graphics, logos, and software — are the exclusive property of RodeoPro and
+              All content, features, and functionality of RodeoPro - including but not limited to
+              text, graphics, logos, and software - are the exclusive property of RodeoPro and
               are protected by applicable intellectual property laws. You may not reproduce,
               distribute, or create derivative works without our express written permission.
             </p>

@@ -210,7 +210,7 @@ export default function AccountPage() {
         <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
           <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Mobile App</h2>
           <p className="text-sm text-[#9CA3AF] mb-4">
-            Track your runs, manage horses and arenas — all from your phone.
+            Track your runs, manage horses and arenas! All from your phone!
           </p>
           {!isActive && (
             <div className="flex items-center gap-2 text-yellow-400 text-xs mb-4">
