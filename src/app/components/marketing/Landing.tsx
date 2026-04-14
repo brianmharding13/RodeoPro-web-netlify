@@ -147,12 +147,12 @@ export default function Landing() {
               </h1>
               <p className="text-lg sm:text-xl text-[#9CA3AF] mb-8 max-w-2xl">
                 RodeoPro gives barrel racers a professional-grade platform to log runs, analyze
-                performance, and track earnings — all from your phone.
+                performance, and track earnings! All from your phone!
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
                 <a
-                  href="https://apps.apple.com/app/rodeoapro"
+                  href="https://apps.apple.com/app/rodeoproapp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-black/90 transition-colors"
@@ -166,7 +166,7 @@ export default function Landing() {
                   </div>
                 </a>
                 <a
-                  href="https://play.google.com/store/apps/details?id=com.rodeoapro"
+                  href="https://play.google.com/store/apps/details?id=com.rodeopro.app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-black/90 transition-colors"

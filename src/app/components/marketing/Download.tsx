@@ -46,7 +46,7 @@ export default function Download() {
           <h1 className="text-4xl font-bold mb-3">Get the App</h1>
           <p className="text-[#9CA3AF] text-lg mb-10">
             Track every run, manage your horses and arenas, and view your
-            performance — all from your phone.
+            performance! All from your phone!
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

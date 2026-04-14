@@ -21,6 +21,8 @@ export default function AccountPage() {
   const [subLoading, setSubLoading] = useState(true);
   const [subRefreshing, setSubRefreshing] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const success = searchParams.get("success") === "true";
 
@@ -44,6 +46,18 @@ export default function AccountPage() {
   const handleLogout = async () => {
     await logout();
     navigate("/");
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      await post('/account-delete', {});
+      await logout();
+      navigate('/');
+    } catch {
+      setDeleteLoading(false);
+      setDeleteConfirm(false);
+    }
   };
 
   const handleManageSubscription = async () => {
@@ -210,7 +224,7 @@ export default function AccountPage() {
         <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
           <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Mobile App</h2>
           <p className="text-sm text-[#9CA3AF] mb-4">
-            Track your runs, manage horses and arenas — all from your phone.
+            Track your runs, manage horses and arenas! All from your phone!
           </p>
           {!isActive && (
             <div className="flex items-center gap-2 text-yellow-400 text-xs mb-4">
@@ -229,6 +243,40 @@ export default function AccountPage() {
             <Download className="w-4 h-4" />
             Download the App
           </Link>
+        </div>
+
+        {/* Danger zone */}
+        <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
+          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Danger Zone</h2>
+          {!deleteConfirm ? (
+            <button
+              onClick={() => setDeleteConfirm(true)}
+              className="text-sm text-red-400 hover:text-red-300 transition-colors"
+            >
+              Delete Account
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-[#9CA3AF]">This will permanently delete your account and all associated data. This cannot be undone.</p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteLoading}
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                >
+                  {deleteLoading && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                  Yes, Delete My Account
+                </button>
+                <button
+                  onClick={() => setDeleteConfirm(false)}
+                  disabled={deleteLoading}
+                  className="text-sm text-[#9CA3AF] hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
       </main>
