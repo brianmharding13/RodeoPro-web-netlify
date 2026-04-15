@@ -245,9 +245,9 @@ export default function AccountPage() {
           </Link>
         </div>
 
-        {/* Danger zone */}
+        {/* Account Management */}
         <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
-          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Danger Zone</h2>
+          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Account Management</h2>
           {!deleteConfirm ? (
             <button
               onClick={() => setDeleteConfirm(true)}
