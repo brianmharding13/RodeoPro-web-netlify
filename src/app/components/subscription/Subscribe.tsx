@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'motion/react';
-import { Check, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Check, ArrowRight, Loader2, AlertCircle, LogOut } from 'lucide-react';
 import { post } from '../../../lib/api';
 
 const plans = [
@@ -43,7 +43,7 @@ const plans = [
 export default function Subscribe() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -80,10 +80,19 @@ export default function Subscribe() {
     <div className="min-h-screen bg-[#111827] text-white flex flex-col">
       {/* Header */}
       <header className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <Link to="/" className="flex items-center">
-              <img src="/images/rodeoProWhite.svg" alt="RodeoPro" className="h-8" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center">
+            <img src="/images/rodeoProWhite.svg" alt="RodeoPro" className="h-8" />
           </Link>
+          {user && (
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign out
+            </button>
+          )}
         </div>
       </header>
 

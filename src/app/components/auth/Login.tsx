@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import { humanizeAuthError } from '../../../lib/authErrors';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
@@ -25,8 +26,9 @@ export default function Login() {
     try {
       await login(formData.email, formData.password);
       navigate('/dashboard');
-    } catch {
-      setError('Invalid email or password');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '';
+      setError(humanizeAuthError(message));
     } finally {
       setLoading(false);
     }
@@ -41,7 +43,7 @@ export default function Login() {
     });
     setResetLoading(false);
     if (error) {
-      setResetError(error.message);
+      setResetError(humanizeAuthError(error.message));
     } else {
       setResetSent(true);
     }

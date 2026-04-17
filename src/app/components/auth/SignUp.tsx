@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
+import { humanizeAuthError } from '../../../lib/authErrors';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, ArrowRight, CheckCircle } from 'lucide-react';
 
@@ -41,8 +42,8 @@ export default function SignUp() {
         navigate('/subscribe');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to create account. Please try again.';
-      setError(message);
+      const message = err instanceof Error ? err.message : '';
+      setError(humanizeAuthError(message));
     } finally {
       setLoading(false);
     }

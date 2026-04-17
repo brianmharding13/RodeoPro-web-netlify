@@ -68,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    globalThis.location.href = '/';
   };
 
   return (

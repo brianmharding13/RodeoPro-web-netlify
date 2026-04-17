@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { supabase } from '../../../lib/supabase';
+import { humanizeAuthError } from '../../../lib/authErrors';
 import { motion } from 'motion/react';
 import { Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
@@ -27,7 +28,7 @@ export default function ResetPassword() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      setError(error.message);
+      setError(humanizeAuthError(error.message));
     } else {
       setDone(true);
     }
