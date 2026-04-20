@@ -28,7 +28,8 @@ export default function Login() {
       navigate('/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '';
-      setError(humanizeAuthError(message));
+      const code = (err as { code?: string }).code;
+      setError(humanizeAuthError(message, code));
     } finally {
       setLoading(false);
     }

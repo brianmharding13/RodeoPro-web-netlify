@@ -1,5 +1,10 @@
-export function humanizeAuthError(message: string): string {
+export function humanizeAuthError(message: string, code?: string): string {
   const m = message.toLowerCase();
+  const c = code?.toLowerCase() ?? '';
+
+  if (c === 'email_not_confirmed' || m.includes('email not confirmed') || m.includes('email_not_confirmed')) {
+    return 'Please verify your email address before signing in.';
+  }
   if (
     m.includes('invalid login credentials') ||
     m.includes('invalid credentials') ||
@@ -7,9 +12,6 @@ export function humanizeAuthError(message: string): string {
     m.includes('user not found')
   ) {
     return 'Incorrect email or password. Please try again.';
-  }
-  if (m.includes('email not confirmed') || m.includes('email_not_confirmed')) {
-    return 'Please verify your email address before signing in.';
   }
   if (
     m.includes('too many requests') ||
