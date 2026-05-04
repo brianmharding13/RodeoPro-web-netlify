@@ -5,6 +5,41 @@ import { motion } from 'motion/react';
 import { Check, ArrowRight, Loader2, AlertCircle, LogOut } from 'lucide-react';
 import { post } from '../../../lib/api';
 
+export const plans = [
+  {
+    id: 'monthly',
+    name: 'Monthly',
+    price: 7.99,
+    interval: 'month',
+    priceId: import.meta.env.VITE_STRIPE_PRICE_MONTHLY as string,
+    features: [
+      'Unlimited run tracking',
+      'Multiple horses & arenas',
+      'Performance analytics',
+      'Photo & video uploads',
+      'PR tracking & badges',
+      'Payout calculator',
+    ],
+  },
+  {
+    id: 'annual',
+    name: 'Annual',
+    price: 71.88,
+    interval: 'year',
+    priceId: import.meta.env.VITE_STRIPE_PRICE_ANNUAL as string,
+    popular: true,
+    savings: 'Save 25%',
+    features: [
+      'Everything in Monthly',
+      '2 months free',
+      'Priority support',
+      'Early access to features',
+      'Export your data',
+      'Advanced statistics',
+    ],
+  },
+];
+
 export default function Subscribe() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -14,41 +49,6 @@ export default function Subscribe() {
   const [error, setError] = useState('');
 
   const cancelled = searchParams.get('cancelled') === 'true';
-
-  const plans = [
-    {
-      id: 'monthly',
-      name: 'Monthly',
-      price: 7.99,
-      interval: 'month',
-      priceId: import.meta.env.VITE_STRIPE_PRICE_MONTHLY as string,
-      features: [
-        'Unlimited run tracking',
-        'Multiple horses & arenas',
-        'Performance analytics',
-        'Photo & video uploads',
-        'PR tracking & badges',
-        'Payout calculator',
-      ],
-    },
-    {
-      id: 'annual',
-      name: 'Annual',
-      price: 71.88,
-      interval: 'year',
-      priceId: import.meta.env.VITE_STRIPE_PRICE_ANNUAL as string,
-      popular: true,
-      savings: 'Save 25%',
-      features: [
-        'Everything in Monthly',
-        '2 months free',
-        'Priority support',
-        'Early access to features',
-        'Export your data',
-        'Advanced statistics',
-      ],
-    },
-  ];
 
   const handleCheckout = async () => {
     if (!user) {

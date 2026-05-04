@@ -7,6 +7,7 @@ import Login from "./components/auth/Login";
 import ResetPassword from "./components/auth/ResetPassword";
 import Subscribe from "./components/subscription/Subscribe";
 import AccountPage from "./components/account/AccountPage";
+import DeleteAccount from "./components/account/DeleteAccount";
 import Download from "./components/marketing/Download";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
       {
         path: "/reset-password",
         Component: ResetPassword,
+      },
+      {
+        path: "/delete",
+        Component: DeleteAccount,
       },
       {
         path: "/dashboard",

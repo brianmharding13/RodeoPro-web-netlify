@@ -13,6 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { plans } from "../subscription/Subscribe";
 
 // Animated section wrapper
 function AnimatedSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -497,92 +498,63 @@ export default function Landing() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* Monthly Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-[#1F2937] border border-[#374151] rounded-xl p-8"
-              >
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-4">Monthly</h3>
-                  <div className="text-4xl font-bold text-[#F59E0B] mb-2">
-                    $7.99<span className="text-lg text-[#9CA3AF]">/month</span>
-                  </div>
-                  <p className="text-sm text-[#9CA3AF]">Billed monthly, cancel anytime.</p>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "Unlimited run logging",
-                    "Unlimited horses & arenas",
-                    "Performance analytics & charts",
-                    "Photo & video attachments",
-                    "Earnings tracking",
-                    "Personal record tracking",
-                    "Clean run streaks",
-                    "Dark & light mode",
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#9CA3AF]">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  to={user ? "/subscribe" : "/signup"}
-                  className="block w-full bg-[#0D9488] text-white py-3 rounded-lg font-semibold text-center hover:bg-[#0D9488]/90 transition-colors"
+              {plans.map((plan, index) => (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`bg-[#1F2937] rounded-xl p-8 relative ${
+                    plan.popular
+                      ? "border-2 border-[#F59E0B]"
+                      : "border border-[#374151]"
+                  }`}
                 >
-                  {user ? "Subscribe Monthly" : "Get Started"}
-                </Link>
-              </motion.div>
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#111827] px-4 py-1 rounded-full text-sm font-bold">
+                      Best Value
+                    </div>
+                  )}
 
-              {/* Annual Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="bg-[#1F2937] border-2 border-[#F59E0B] rounded-xl p-8 relative"
-              >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#111827] px-4 py-1 rounded-full text-sm font-bold">
-                  Best Value
-                </div>
-
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-4">Annual</h3>
-                  <div className="text-4xl font-bold text-[#F59E0B] mb-2">
-                    $5.99<span className="text-lg text-[#9CA3AF]">/month</span>
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
+                    <div className="text-4xl font-bold text-[#F59E0B] mb-2">
+                      ${plan.price}
+                      <span className="text-lg text-[#9CA3AF]">/{plan.interval}</span>
+                    </div>
+                    {plan.interval === "year" && (
+                      <p className="text-sm text-[#9CA3AF]">Billed as ${(plan.price).toFixed(2)} / year.</p>
+                    )}
+                    {plan.interval === "month" && (
+                      <p className="text-sm text-[#9CA3AF]">Billed monthly, cancel anytime.</p>
+                    )}
+                    {plan.savings && (
+                      <p className="text-sm text-[#0D9488] font-semibold mt-2">{plan.savings}</p>
+                    )}
                   </div>
-                  <p className="text-sm text-[#9CA3AF]">Billed as $71.88 / year.</p>
-                </div>
 
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "Unlimited run logging",
-                    "Unlimited horses & arenas",
-                    "Performance analytics & charts",
-                    "Photo & video attachments",
-                    "Earnings tracking",
-                    "Personal record tracking",
-                    "Clean run streaks",
-                    "Dark & light mode",
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#9CA3AF]">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                        <span className="text-[#9CA3AF]">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-                <Link
-                  to={user ? "/subscribe" : "/signup"}
-                  className="block w-full bg-[#F59E0B] text-[#111827] py-3 rounded-lg font-semibold text-center hover:bg-[#F59E0B]/90 transition-colors"
-                >
-                  {user ? "Subscribe Annually" : "Get Started"}
-                </Link>
-              </motion.div>
+                  <Link
+                    to={user ? "/subscribe" : "/signup"}
+                    className={`block w-full py-3 rounded-lg font-semibold text-center transition-colors ${
+                      plan.popular
+                        ? "bg-[#F59E0B] text-[#111827] hover:bg-[#F59E0B]/90"
+                        : "bg-[#0D9488] text-white hover:bg-[#0D9488]/90"
+                    }`}
+                  >
+                    {user ? `Subscribe ${plan.name}` : "Get Started"}
+                  </Link>
+                </motion.div>
+              ))}
             </div>
 
             <p className="text-center text-sm text-[#9CA3AF] mt-8 max-w-2xl mx-auto">
