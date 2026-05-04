@@ -150,8 +150,15 @@ export default function Subscribe() {
                     )}
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl font-bold">${plan.price}</div>
-                    <div className="text-gray-400 text-sm">per {plan.interval}</div>
+                    <div className="text-4xl font-bold">
+                      ${plan.interval === 'year' ? (plan.price / 12).toFixed(2) : plan.price.toFixed(2)}
+                    </div>
+                    <div className="text-gray-400 text-sm">
+                      {plan.interval === 'year' ? 'per month' : `per ${plan.interval}`}
+                    </div>
+                    {plan.interval === 'year' && (
+                      <div className="text-gray-500 text-xs mt-2">Billed as ${plan.price.toFixed(2)} / year</div>
+                    )}
                   </div>
                 </div>
 

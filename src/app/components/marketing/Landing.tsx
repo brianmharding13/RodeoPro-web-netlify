@@ -520,11 +520,11 @@ export default function Landing() {
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
                     <div className="text-4xl font-bold text-[#F59E0B] mb-2">
-                      ${plan.price}
-                      <span className="text-lg text-[#9CA3AF]">/{plan.interval}</span>
+                      ${plan.interval === 'year' ? (plan.price / 12).toFixed(2) : plan.price.toFixed(2)}
+                      <span className="text-lg text-[#9CA3AF]">/month</span>
                     </div>
                     {plan.interval === "year" && (
-                      <p className="text-sm text-[#9CA3AF]">Billed as ${(plan.price).toFixed(2)} / year.</p>
+                      <p className="text-sm text-[#9CA3AF]">Billed as ${plan.price.toFixed(2)} / year</p>
                     )}
                     {plan.interval === "month" && (
                       <p className="text-sm text-[#9CA3AF]">Billed monthly, cancel anytime.</p>
