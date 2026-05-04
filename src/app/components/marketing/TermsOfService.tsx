@@ -48,10 +48,10 @@ export default function TermsOfService() {
               and for all activity that occurs under your account. You agree to notify us
               immediately at{" "}
               <a
-                href="mailto:support@rodeoproapp.com"
+                href="mailto:rodeoproapp@gmail.com"
                 className="text-[#F59E0B] hover:underline"
               >
-                support@rodeoproapp.com
+                rodeoproapp@gmail.com
               </a>{" "}
               if you suspect any unauthorized use of your account.
             </p>
@@ -132,10 +132,10 @@ export default function TermsOfService() {
             <p>
               If you have any questions about these Terms, please contact us at{" "}
               <a
-                href="mailto:support@rodeoproapp.com"
+                href="mailto:rodeoproapp@gmail.com"
                 className="text-[#F59E0B] hover:underline"
               >
-                support@rodeoproapp.com
+                rodeoproapp@gmail.com
               </a>
               .
             </p>

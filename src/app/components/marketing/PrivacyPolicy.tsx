@@ -72,10 +72,10 @@ export default function PrivacyPolicy() {
               provide services. You may request deletion of your account and associated data at
               any time by contacting us at{" "}
               <a
-                href="mailto:support@rodeoproapp.com"
+                href="mailto:rodeoproapp@gmail.com"
                 className="text-[#F59E0B] hover:underline"
               >
-                support@rodeoproapp.com
+                rodeoproapp@gmail.com
               </a>
               .
             </p>
@@ -114,10 +114,10 @@ export default function PrivacyPolicy() {
             <p>
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a
-                href="mailto:support@rodeoproapp.com"
+                href="mailto:rodeoproapp@gmail.com"
                 className="text-[#F59E0B] hover:underline"
               >
-                support@rodeoproapp.com
+                rodeoproapp@gmail.com
               </a>
               .
             </p>

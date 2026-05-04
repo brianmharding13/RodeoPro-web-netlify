@@ -507,7 +507,7 @@ export default function Landing() {
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-4">Monthly</h3>
                   <div className="text-4xl font-bold text-[#F59E0B] mb-2">
-                    $9.99<span className="text-lg text-[#9CA3AF]">/month</span>
+                    $7.99<span className="text-lg text-[#9CA3AF]">/month</span>
                   </div>
                   <p className="text-sm text-[#9CA3AF]">Billed monthly, cancel anytime.</p>
                 </div>
@@ -553,9 +553,9 @@ export default function Landing() {
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-4">Annual</h3>
                   <div className="text-4xl font-bold text-[#F59E0B] mb-2">
-                    $6.99<span className="text-lg text-[#9CA3AF]">/month</span>
+                    $5.99<span className="text-lg text-[#9CA3AF]">/month</span>
                   </div>
-                  <p className="text-sm text-[#9CA3AF]">Billed as $83.88 / year.</p>
+                  <p className="text-sm text-[#9CA3AF]">Billed as $71.88 / year.</p>
                 </div>
 
                 <ul className="space-y-3 mb-8">
@@ -754,10 +754,10 @@ export default function Landing() {
             <div>
               <h4 className="font-semibold mb-3">Contact</h4>
               <a
-                href="mailto:support@rodeoproapp.com"
+                href="mailto:rodeoproapp@gmail.com"
                 className="text-[#9CA3AF] hover:text-white transition-colors block mb-2"
               >
-                support@rodeoproapp.com
+                rodeoproapp@gmail.com
               </a>
               <div className="flex flex-col gap-2 mt-4">
                 <Link to="/privacy" className="text-[#9CA3AF] hover:text-white transition-colors text-sm">
