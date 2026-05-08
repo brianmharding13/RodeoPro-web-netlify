@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
+import { connectPowerSync, disconnectPowerSync } from '../../lib/db';
 
 interface User {
   id: string;
@@ -34,9 +35,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Load initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ? toUser(session.user) : null);
+
+      if (session?.access_token) {
+        connectPowerSync().catch((error) => {
+          console.warn('[PowerSync] failed to connect during session restore', error);
+        });
+      } else {
+        disconnectPowerSync().catch(() => {
+          // Ignore disconnect errors during cold start.
+        });
+      }
+
       setLoading(false);
     });
 
@@ -44,6 +56,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ? toUser(session.user) : null);
+
+      if (session?.access_token) {
+        connectPowerSync().catch((error) => {
+          console.warn('[PowerSync] failed to connect on auth change', error);
+        });
+      } else {
+        disconnectPowerSync().catch(() => {
+          // Ignore disconnect errors during sign-out.
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -66,6 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    await disconnectPowerSync().catch(() => {
+      // Ignore disconnect errors and continue sign-out.
+    });
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     globalThis.location.href = '/';

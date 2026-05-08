@@ -245,6 +245,34 @@ export default function AccountPage() {
           </Link>
         </div>
 
+        {/* Data Management */}
+        <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
+          <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Data Management</h2>
+          <p className="text-sm text-[#9CA3AF] mb-4">
+            Manage horses, arenas, and runs from the web dashboard.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Link
+              to="/dashboard/horses"
+              className="text-center rounded-lg border border-[#374151] py-2 text-sm text-[#9CA3AF] hover:text-white hover:border-[#6B7280] transition-colors"
+            >
+              Horses
+            </Link>
+            <Link
+              to="/dashboard/arenas"
+              className="text-center rounded-lg border border-[#374151] py-2 text-sm text-[#9CA3AF] hover:text-white hover:border-[#6B7280] transition-colors"
+            >
+              Arenas
+            </Link>
+            <Link
+              to="/dashboard/runs"
+              className="text-center rounded-lg border border-[#374151] py-2 text-sm text-[#9CA3AF] hover:text-white hover:border-[#6B7280] transition-colors"
+            >
+              Runs
+            </Link>
+          </div>
+        </div>
+
         {/* Account Management */}
         <div className="bg-[#1F2937] border border-[#374151] rounded-2xl p-6">
           <h2 className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Account Management</h2>

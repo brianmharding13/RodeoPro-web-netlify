@@ -4,15 +4,20 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "powersync:assets": "powersync-web copy-assets",
+    "postinstall": "npm run powersync:assets",
+    "build": "npm run powersync:assets && vite build",
     "dev": "vite"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
+    "@journeyapps/wa-sqlite": "^1.7.0",
     "@mui/icons-material": "7.3.5",
     "@mui/material": "7.3.5",
     "@popperjs/core": "2.11.8",
+    "@powersync/react": "^1.10.0",
+    "@powersync/web": "^1.37.2",
     "@radix-ui/react-accordion": "1.2.3",
     "@radix-ui/react-alert-dialog": "1.1.6",
     "@radix-ui/react-aspect-ratio": "1.1.2",
