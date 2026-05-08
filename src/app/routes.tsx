@@ -10,6 +10,9 @@ import AccountPage from "./components/account/AccountPage";
 import DeleteAccount from "./components/account/DeleteAccount";
 import Download from "./components/marketing/Download";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import HorsesPage from "./components/dashboard/HorsesPage";
+import ArenasPage from "./components/dashboard/ArenasPage";
+import RunsPage from "./components/dashboard/RunsPage";
 
 function RootLayout() {
   return (
@@ -65,6 +68,9 @@ export const router = createBrowserRouter([
         Component: ProtectedRoute,
         children: [
           { index: true, Component: AccountPage },
+          { path: "horses", Component: HorsesPage },
+          { path: "arenas", Component: ArenasPage },
+          { path: "runs", Component: RunsPage },
         ],
       },
     ],

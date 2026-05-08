@@ -21,6 +21,15 @@ dist/
 .eslintcache
 .vite/
 
+# PowerSync & wa-sqlite
+*.db
+*.db-shm
+*.db-wal
+public/@powersync/
+
+# Browser storage
+*.indexeddb
+
 # Editor
 .vscode/
 .idea/
