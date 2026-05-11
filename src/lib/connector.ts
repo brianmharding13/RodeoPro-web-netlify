@@ -23,6 +23,27 @@ const INTEGER_FIELDS: Record<string, string[]> = {
   arenas: [],
 };
 
+function normalizeIntegerValue(
+  table: string,
+  field: string,
+  value: unknown,
+): number | null {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const numericValue = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return null;
+  }
+
+  if (table === 'runs' && field === 'time_ms' && !Number.isInteger(numericValue) && Math.abs(numericValue) < 1000) {
+    return Math.round(numericValue * 1000);
+  }
+
+  return Math.round(numericValue);
+}
+
 function transformOpData(
   table: string,
   data: Record<string, unknown>,
@@ -52,9 +73,7 @@ function transformOpData(
 
   for (const field of INTEGER_FIELDS[table] ?? []) {
     if (field in result) {
-      const val = result[field];
-      if (val === null || val === undefined) continue;
-      result[field] = Math.round(Number(val));
+      result[field] = normalizeIntegerValue(table, field, result[field]);
     }
   }
 

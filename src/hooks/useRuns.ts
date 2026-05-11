@@ -2,6 +2,18 @@ import { useQuery } from '@powersync/react';
 import { execute } from '@/lib/db';
 import type { RunRow, RunWithDetails } from '@/lib/schema';
 
+function normalizeRunTimeMs(value: number | null | undefined): number | null {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return null;
+  }
+
+  if (!Number.isInteger(value) && Math.abs(value) < 1000) {
+    return Math.round(value * 1000);
+  }
+
+  return Math.round(value);
+}
+
 const RUNS_SQL = `
   SELECT
     r.*,
@@ -40,6 +52,7 @@ export async function createRun(input: CreateRunInput): Promise<string> {
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   const runAt = input.runAt ?? now;
+  const normalizedTimeMs = normalizeRunTimeMs(input.timeMs ?? null);
 
   await execute(
     `INSERT INTO runs (
@@ -54,7 +67,7 @@ export async function createRun(input: CreateRunInput): Promise<string> {
       input.horseId ?? null,
       input.arenaId ?? null,
       runAt,
-      input.timeMs ?? null,
+      normalizedTimeMs,
       input.isClean ? 1 : 0,
       input.barrelCount ?? 0,
       input.payoutCents ?? null,
@@ -82,7 +95,7 @@ export async function updateRun(id: string, input: UpdateRunInput): Promise<void
 
   if ('time_ms' in input) {
     fields.push('time_ms = ?', 'time_updated_at = ?');
-    values.push(input.time_ms ?? null, now);
+    values.push(normalizeRunTimeMs(input.time_ms ?? null), now);
   }
   if ('is_clean' in input) {
     fields.push('is_clean = ?', 'is_clean_updated_at = ?');
