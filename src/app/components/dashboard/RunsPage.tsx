@@ -5,6 +5,18 @@ import { useHorses } from '@/hooks/useHorses';
 import { useArenas } from '@/hooks/useArenas';
 import { createRun, deleteRun, updateRun, useRuns } from '@/hooks/useRuns';
 
+function msToTimeString(timeMs: number | null): string {
+  if (timeMs === null || timeMs === 0) return 'n/a';
+  const ms = Math.abs(timeMs % 1000);
+  const totalSec = Math.floor(timeMs / 1000);
+  if (totalSec >= 60) {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+  }
+  return `${totalSec}.${String(ms).padStart(3, '0')}`;
+}
+
 export default function RunsPage() {
   const { user } = useAuth();
   const { horses } = useHorses();
@@ -163,7 +175,7 @@ export default function RunsPage() {
                     {run.horse_name ?? 'Unknown horse'} at {run.arena_name ?? 'Unknown arena'}
                   </p>
                   <p className="text-xs text-[#9CA3AF]">
-                    Time: {run.time_ms ?? 'n/a'} ms · Barrels: {run.barrel_count ?? 0} · {run.notes ?? 'No notes'}
+                    Time: {msToTimeString(run.time_ms)} · Barrels: {run.barrel_count ?? 0} · {run.notes ?? 'No notes'}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
