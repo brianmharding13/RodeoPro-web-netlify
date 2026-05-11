@@ -61,52 +61,82 @@ export default function RunsPage() {
   return (
     <DashboardShell title="Runs" description="Track run records for horses and arenas.">
       <form onSubmit={onCreate} className="bg-[#1F2937] border border-[#374151] rounded-xl p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
-        <select
-          value={horseId}
-          onChange={(e) => setHorseId(e.target.value)}
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        >
-          <option value="">Horse</option>
-          {horseOptions.map((horse) => (
-            <option key={horse.id} value={horse.id}>{horse.barn_name ?? 'Unnamed horse'}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="run-horse" className="text-xs font-medium text-[#D1D5DB]">
+            Horse
+          </label>
+          <select
+            id="run-horse"
+            value={horseId}
+            onChange={(e) => setHorseId(e.target.value)}
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          >
+            <option value="">Horse</option>
+            {horseOptions.map((horse) => (
+              <option key={horse.id} value={horse.id}>{horse.barn_name ?? 'Unnamed horse'}</option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          value={arenaId}
-          onChange={(e) => setArenaId(e.target.value)}
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        >
-          <option value="">Arena</option>
-          {arenaOptions.map((arena) => (
-            <option key={arena.id} value={arena.id}>{arena.name ?? 'Unnamed arena'}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="run-arena" className="text-xs font-medium text-[#D1D5DB]">
+            Arena
+          </label>
+          <select
+            id="run-arena"
+            value={arenaId}
+            onChange={(e) => setArenaId(e.target.value)}
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          >
+            <option value="">Arena</option>
+            {arenaOptions.map((arena) => (
+              <option key={arena.id} value={arena.id}>{arena.name ?? 'Unnamed arena'}</option>
+            ))}
+          </select>
+        </div>
 
-        <input
-          value={timeMs}
-          onChange={(e) => setTimeMs(e.target.value)}
-          type="number"
-          placeholder="Time ms"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
+        <div className="flex flex-col gap-1">
+          <label htmlFor="run-time-ms" className="text-xs font-medium text-[#D1D5DB]">
+            Time (ms)
+          </label>
+          <input
+            id="run-time-ms"
+            value={timeMs}
+            onChange={(e) => setTimeMs(e.target.value)}
+            type="number"
+            placeholder="Time ms"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
 
-        <input
-          value={barrelCount}
-          onChange={(e) => setBarrelCount(e.target.value)}
-          type="number"
-          min={0}
-          max={3}
-          placeholder="Barrels"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
+        <div className="flex flex-col gap-1">
+          <label htmlFor="run-barrel-count" className="text-xs font-medium text-[#D1D5DB]">
+            Knocked Barrels
+          </label>
+          <input
+            id="run-barrel-count"
+            value={barrelCount}
+            onChange={(e) => setBarrelCount(e.target.value)}
+            type="number"
+            min={0}
+            max={3}
+            placeholder="Barrels"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
 
-        <input
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Notes"
-          className="md:col-span-2 bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
+        <div className="md:col-span-2 flex flex-col gap-1">
+          <label htmlFor="run-notes" className="text-xs font-medium text-[#D1D5DB]">
+            Notes
+          </label>
+          <input
+            id="run-notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Notes"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
 
         <button
           type="submit"

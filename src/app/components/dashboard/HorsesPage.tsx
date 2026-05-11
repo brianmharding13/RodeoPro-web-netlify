@@ -41,19 +41,31 @@ export default function HorsesPage() {
   return (
     <DashboardShell title="Horses" description="Create, update, and delete horse records.">
       <form onSubmit={onCreate} className="bg-[#1F2937] border border-[#374151] rounded-xl p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-        <input
-          value={barnName}
-          onChange={(e) => setBarnName(e.target.value)}
-          placeholder="Barn name"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-          required
-        />
-        <input
-          value={registeredName}
-          onChange={(e) => setRegisteredName(e.target.value)}
-          placeholder="Registered name (optional)"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
+        <div className="flex flex-col gap-1">
+          <label htmlFor="horse-barn-name" className="text-xs font-medium text-[#D1D5DB]">
+            Barn Name
+          </label>
+          <input
+            id="horse-barn-name"
+            value={barnName}
+            onChange={(e) => setBarnName(e.target.value)}
+            placeholder="Barn name"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+            required
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="horse-registered-name" className="text-xs font-medium text-[#D1D5DB]">
+            Registered Name
+          </label>
+          <input
+            id="horse-registered-name"
+            value={registeredName}
+            onChange={(e) => setRegisteredName(e.target.value)}
+            placeholder="Registered name (optional)"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
         <button
           type="submit"
           disabled={saving || !user}

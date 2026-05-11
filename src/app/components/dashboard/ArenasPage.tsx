@@ -45,25 +45,43 @@ export default function ArenasPage() {
   return (
     <DashboardShell title="Arenas" description="Manage arenas and locations.">
       <form onSubmit={onCreate} className="bg-[#1F2937] border border-[#374151] rounded-xl p-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Arena name"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-          required
-        />
-        <input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="City"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
-        <input
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          placeholder="State"
-          className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-        />
+        <div className="flex flex-col gap-1">
+          <label htmlFor="arena-name" className="text-xs font-medium text-[#D1D5DB]">
+            Arena Name
+          </label>
+          <input
+            id="arena-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Arena name"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+            required
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="arena-city" className="text-xs font-medium text-[#D1D5DB]">
+            City
+          </label>
+          <input
+            id="arena-city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="City"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="arena-state" className="text-xs font-medium text-[#D1D5DB]">
+            State
+          </label>
+          <input
+            id="arena-state"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            placeholder="State"
+            className="bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
+          />
+        </div>
         <button
           type="submit"
           disabled={saving || !user}
